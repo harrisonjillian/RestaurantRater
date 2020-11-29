@@ -1,6 +1,7 @@
 ﻿using RestaurantRater.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -26,9 +27,9 @@ namespace RestaurantRater.Controllers
         // POST: Restaurant Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create (Restaurant restaurant) 
-        { 
-            if(ModelState.IsValid)
+        public ActionResult Create(Restaurant restaurant)
+        {
+            if (ModelState.IsValid)
             {
                 _db.Restaurants.Add(restaurant);
                 _db.SaveChanges();
@@ -63,6 +64,44 @@ namespace RestaurantRater.Controllers
             _db.SaveChanges();
 
             return RedirectToAction("Index");
+        }
+
+        // GET: Restaurant/Edit/{id}
+        // Get an id from the user
+        // Handle if the id is null
+        // Find a Restaurant by that id
+        // If the restaurant doesn't exit
+        // Return the restaurant and the view
+
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Restaurant restaurant = _db.Restaurants.Find(id);
+            {
+            if (restaurant == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+                }
+                return View(restaurant);
+                    
+            }
+        }
+
+        // POST: Restaurant/Edit/{id}
+        [HttpPost] 
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit (Restaurant restaurant)
+        {
+            if (ModelState.IsValid)
+            {
+                _db.Entry(restaurant).State = EntityState.Modified;
+                _db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(restaurant);
         }
     }
 }
